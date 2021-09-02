@@ -39,7 +39,7 @@ func NewDomain(repo repository.Repository) Domain {
 	}
 }
 
-func (o *orders) NewOrder(input dto.CreateOrderDTO) (int,error) {
+func (o *orders) NewOrder(input dto.CreateOrderDTO) (int, error) {
 
 	city := o.repo.GetCity(input.CityCode)
 	if city.Code == 0 {
@@ -51,9 +51,12 @@ func (o *orders) NewOrder(input dto.CreateOrderDTO) (int,error) {
 		return 0, fmt.Errorf("client does not exist")
 	}
 
-	productsIds := make([]int, len(input.Products))
+	productsIds := make([]repository.ProductDTO, len(input.Products))
 	for i, product := range input.Products {
-		productsIds[i] = product.Code
+		productsIds[i] = repository.ProductDTO{
+			Id:       product.Code,
+			Quantity: product.Quantity,
+		}
 	}
 
 	newOrderRepoDTO := repository.NewOrderDTO{
@@ -62,6 +65,7 @@ func (o *orders) NewOrder(input dto.CreateOrderDTO) (int,error) {
 		DeliveryAddress: input.DeliveryAddress,
 		Products:        productsIds,
 		DeliveryCost:    city.DeliveryCost,
+		Status:          "pending",
 	}
 
 	id, err := o.repo.SaveOrder(newOrderRepoDTO)
@@ -70,15 +74,15 @@ func (o *orders) NewOrder(input dto.CreateOrderDTO) (int,error) {
 }
 
 func (o *orders) UpdateOrderStatus(orderId int, status string) {
-  var statusToSave string
-  if status == "success" {
-    statusToSave = "readyForShipping"
-  } else if status == "failure" {
-    statusToSave = "cancelled"
-  } else {
-    // handle error
-    return
-  }
+	var statusToSave string
+	if status == "success" {
+		statusToSave = "readyForShipping"
+	} else if status == "failure" {
+		statusToSave = "cancelled"
+	} else {
+		// handle error
+		return
+	}
 
-  o.repo.UpdateOrderStatus(orderId, statusToSave)
+	o.repo.UpdateOrderStatus(orderId, statusToSave)
 }

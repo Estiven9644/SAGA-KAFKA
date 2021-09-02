@@ -4,8 +4,14 @@ type NewOrderDTO struct {
   ClientId int
   CityCode int
   DeliveryAddress string
-  Products []int
+  Products []ProductDTO
   DeliveryCost int
+  Status string
+}
+
+type ProductDTO struct {
+  Id int
+  Quantity int
 }
 
 type CityDTO struct {

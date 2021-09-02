@@ -20,15 +20,15 @@ func NewSqlRepository(db *sql.DB) repository.Repository {
 
 func (s *sqlRepository) SaveOrder(orders repository.NewOrderDTO) (int, error) {
   var id int
-	if err := s.db.QueryRow("INSERT INTO orders (client_id, city_code, delivery_address, delivery_cost) VALUES ($1, $2, $3, $4) returning id",
-		orders.ClientId, orders.CityCode, orders.DeliveryAddress, orders.DeliveryCost).
+	if err := s.db.QueryRow("INSERT INTO orders (client_id, city_code, delivery_address, delivery_cost, status) VALUES ($1, $2, $3, $4, $5) returning id",
+		orders.ClientId, orders.CityCode, orders.DeliveryAddress, orders.DeliveryCost, orders.Status).
 		Scan(&id); err != nil {
 		return 0, fmt.Errorf("error creating user, %v", err)
 	}
 
   for _, product := range orders.Products {
-    _, err := s.db.Exec("INSERT INTO orders_products (order_id, product_id) VALUES ($1, $2)",
-    id, product)
+    _, err := s.db.Exec("INSERT INTO orders_products (order_id, product_id, quantity) VALUES ($1, $2, $3)",
+    id, product.Id, product.Quantity)
     if err != nil {
       return 0, fmt.Errorf("error saving product: %d", product)
     }
