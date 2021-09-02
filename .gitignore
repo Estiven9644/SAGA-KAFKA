@@ -1,3 +1,5 @@
 */Makefile
 */coverage.out
 */vendor
+*/.env
+*/*.swp
