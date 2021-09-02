@@ -1,0 +1,19 @@
+syntax = "proto3";
+package pb;
+option go_package = "/pb;pb";
+
+message OrderCreated {
+  int64 orderId = 1;
+  repeated Product products = 2;
+}
+
+message Product {
+  int64 productId = 1;
+  int64 quantity = 2;
+}
+
+message OrderResult {
+  int64 orderId = 1;
+  string status = 2;
+}
+
